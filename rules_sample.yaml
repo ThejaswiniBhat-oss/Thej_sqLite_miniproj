@@ -1,0 +1,52 @@
+# Sample rulebook (project severity, not CVSS). Same rules as seed_data.py.
+# Fill in exact CIS recommendation numbers from your licensed benchmark copy.
+rules:
+- rule_id: FW-001
+  title: Windows Firewall enabled on all profiles
+  description: Domain, Private and Public firewall profiles should be On.
+  cis_reference: 'CIS Windows Benchmark: Windows Firewall (section no. to be confirmed)'
+  default_severity: High
+  check_description: 'WinRM: Get-NetFirewallProfile | Select Name, Enabled'
+  remediation: Set-NetFirewallProfile -Profile Domain,Private,Public -Enabled True
+- rule_id: SMB-001
+  title: SMBv1 protocol disabled
+  description: SMBv1 is obsolete and should not be enabled.
+  cis_reference: 'CIS Windows Benchmark: SMB settings (section no. to be confirmed)'
+  default_severity: High
+  check_description: 'WinRM: (Get-SmbServerConfiguration).EnableSMB1Protocol'
+  remediation: Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force
+- rule_id: RDP-001
+  title: Remote Desktop (TCP 3389) not exposed unnecessarily
+  description: An open RDP port is an observation to review; it fails only where RDP is not required.
+  cis_reference: 'CIS Windows Benchmark: Remote Desktop Services (section no. to be confirmed)'
+  default_severity: Medium
+  check_description: 'Nmap: state of TCP/3389'
+  remediation: Disable Remote Desktop if not required, or restrict it by firewall rule/VPN.
+- rule_id: PWD-001
+  title: Minimum password length is at least 14
+  description: Short minimum password length weakens account security.
+  cis_reference: 'CIS Windows Benchmark: Account Policies - Password Policy (section no. to be confirmed)'
+  default_severity: Medium
+  check_description: 'WinRM: net accounts (Minimum password length)'
+  remediation: Set the minimum password length to 14 or more via local/group policy.
+- rule_id: LOCK-001
+  title: Account lockout threshold configured
+  description: A lockout threshold of 0 allows unlimited password guessing.
+  cis_reference: 'CIS Windows Benchmark: Account Policies - Account Lockout (section no. to be confirmed)'
+  default_severity: Medium
+  check_description: 'WinRM: net accounts (Lockout threshold)'
+  remediation: Set an account lockout threshold greater than 0 via local/group policy.
+- rule_id: ACC-001
+  title: Guest account disabled
+  description: The built-in Guest account should be disabled.
+  cis_reference: 'CIS Windows Benchmark: Local Policies - Security Options (section no. to be confirmed)'
+  default_severity: Low
+  check_description: 'WinRM: Get-LocalUser -Name Guest | Select Enabled'
+  remediation: Disable-LocalUser -Name Guest
+- rule_id: UPD-001
+  title: Windows Update service not disabled
+  description: Disabled update service prevents security patches from installing.
+  cis_reference: 'CIS Windows Benchmark: Windows Update (section no. to be confirmed)'
+  default_severity: Medium
+  check_description: 'WinRM: Get-Service wuauserv | Select StartType'
+  remediation: Set-Service wuauserv -StartupType Manual; Start-Service wuauserv
